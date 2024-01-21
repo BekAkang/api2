@@ -1,27 +1,30 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-#Depending on the operating system of the host machines(s) that will build or run the containers, the image specified in the FROM statement may need to be changed.
-#For more information, please see https://aka.ms/containercompat
-
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
-
+# Stage 1: Build the application
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["api.csproj", "api/"]
-RUN dotnet restore "./api/./api.csproj"
+
+# Copy the .csproj file to the working directory
+COPY src/api2/api.csproj .
+
+# Restore NuGet packages
+RUN dotnet restore
+
+# Copy the entire solution to the working directory
 COPY . .
-WORKDIR "/src/api"
-RUN dotnet build "./api.csproj" -c %BUILD_CONFIGURATION% -o /app/build
 
+# Build the application
+RUN dotnet build -c Release -o /app/build
+
+# Stage 2: Publish the application
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./api.csproj" -c %BUILD_CONFIGURATION% -o /app/publish /p:UseAppHost=false
+RUN dotnet publish -c Release -o /app/publish
 
-FROM base AS final
+# Stage 3: Create the final runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Expose the port the app will run on
+EXPOSE 80
+
+# Define the entry point for the application
 ENTRYPOINT ["dotnet", "api.dll"]
