@@ -1,9 +1,9 @@
 # Stage 1: Build the application
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /src
+WORKDIR /app
 
 # Copy the .csproj file to the working directory
-COPY api2/api.csproj .
+COPY *.csproj ./
 
 # Restore NuGet packages
 RUN dotnet restore
