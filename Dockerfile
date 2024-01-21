@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /app
 
 # Copy the .csproj file to the working directory
-COPY api/*.csproj ./api/
+COPY api/api.csproj ./api/
 
 # Restore the dependencies and tools
 RUN dotnet restore ./api/api.csproj
@@ -19,7 +19,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
 WORKDIR /app
 
 # Copy the published application
-COPY --from=build /app/out .
+COPY --from=build /app/out/api .
 
 # Run the application
-ENTRYPOINT ["dotnet", "api/aspnetapp.dll"]
+ENTRYPOINT ["dotnet", "aspnetapp.dll"]
