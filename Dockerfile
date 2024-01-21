@@ -5,26 +5,21 @@ WORKDIR /app
 # Copy the .csproj file to the working directory
 COPY *.csproj ./
 
-# Restore NuGet packages
+# Restore the dependencies and tools
 RUN dotnet restore
 
-# Copy the entire solution to the working directory
-COPY . .
+# Copy the remaining source files
+COPY . ./
 
 # Build the application
-RUN dotnet build -c Release -o /app/build
+RUN dotnet publish -c Release -o out
 
-# Stage 2: Publish the application
-FROM build AS publish
-RUN dotnet publish -c Release -o /app/publish
-
-# Stage 3: Create the final runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS final
+# Stage 2: Run the application
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
 WORKDIR /app
-COPY --from=publish /app/publish .
 
-# Expose the port the app will run on
-EXPOSE 80
+# Copy the published application
+COPY --from=build /app/out ./
 
-# Define the entry point for the application
-ENTRYPOINT ["dotnet", "api.dll"]
+# Run the application
+ENTRYPOINT ["dotnet", "aspnetapp.dll"]
