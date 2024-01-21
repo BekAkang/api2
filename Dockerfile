@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 
 # Copy the .csproj file to the working directory
-COPY src/api.csproj .
+COPY api2/api.csproj .
 
 # Restore NuGet packages
 RUN dotnet restore
