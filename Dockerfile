@@ -6,7 +6,7 @@ WORKDIR /app
 COPY api.csproj ./api/
 
 # Restore the dependencies and tools
-RUN dotnet restore ./api2/api.csproj
+RUN dotnet restore ./api.csproj
 
 # Copy the remaining source files
 COPY . .
