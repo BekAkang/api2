@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /app
 
 # Copy the .csproj file to the working directory
-COPY api2/api.csproj ./api/
+COPY api.csproj ./api/
 
 # Restore the dependencies and tools
 RUN dotnet restore ./api2/api.csproj
